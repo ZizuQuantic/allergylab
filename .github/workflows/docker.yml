@@ -11,6 +11,6 @@ jobs:
     - name: build docker image
       run: |
            cd Part7a
-           docker build ${{secrets.DOCKER_USERNAME}}/al-app:latest ./app
-           docker build ${{secrets.DOCKER_USERNAME}}/al-db-loder:latest ./db-loder
+           docker build -t ${{secrets.DOCKER_USERNAME}}/al-app:latest ./app
+           docker build -t ${{secrets.DOCKER_USERNAME}}/al-db-loder:latest ./db-loder
            docker build ${{secrets.DOCKER_USERNAME}}/al-email:latest ./email
