@@ -1,0 +1,16 @@
+name: AllergyLab CI/CD
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: build docker image
+      run: |
+           cd part7a
+           docker build ${{secrets.DOCKER_USERNAME}}/al-app:latest ./app
+           docker build ${{secrets.DOCKER_USERNAME}}/al-db-loder:latest ./db-loder
+           docker build ${{secrets.DOCKER_USERNAME}}/al-email:latest ./email
