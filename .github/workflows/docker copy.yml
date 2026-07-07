@@ -18,6 +18,20 @@ jobs:
             docker build -t ${{ secrets.DOCKER_USERNAME }}/al-db-loader:latest ./db-loader
             docker build -t ${{ secrets.DOCKER_USERNAME }}/al-email:latest ./email
 
+           DOCKER_USER_LC="$(echo "${{ secrets.DOCKER_USERNAME }}" | tr '[:upper:]' '[:lower:]')"
+
+            APP_IMAGE=$DOCKER_USER_LC/al-app:${{ github.sha }}
+            echo APP_IMAGE=$APP_IMAGE >> $GITHUB_ENV
+            docker build -t $APP_IMAGE ./app
+
+            DB_LOADER_IMAGE=$DOCKER_USER_LC/al-db-loader:${{ github.sha }}
+            echo DB_LOADER_IMAGE=$DB_LOADER_IMAGE >> $GITHUB_ENV
+            docker build -t $DB_LOADER_IMAGE ./db-loader
+
+            EMAIL_IMAGE=$DOCKER_USER_LC/al-email:${{ github.sha }}
+            echo EMAIL_IMAGE=$EMAIL_IMAGE >> $GITHUB_ENV
+            docker build -t $EMAIL_IMAGE ./email
+
             - name: Log in to Docker
               uses: docker/login-action@v3
               with:
