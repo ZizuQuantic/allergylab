@@ -1,0 +1,44 @@
+name: AllergyLab CI/CD
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: build docker image
+      run: |
+           cd Part7a
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/al-app:latest ./app
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/al-db-loader:latest ./db-loader
+            docker build -t ${{ secrets.DOCKER_USERNAME }}/al-email:latest ./email
+
+           DOCKER_USER_LC="$(echo "${{ secrets.DOCKER_USERNAME }}" | tr '[:upper:]' '[:lower:]')"
+
+            APP_IMAGE=$DOCKER_USER_LC/al-app:${{ github.sha }}
+            echo APP_IMAGE=$APP_IMAGE >> $GITHUB_ENV
+            docker build -t $APP_IMAGE ./app
+
+            DB_LOADER_IMAGE=$DOCKER_USER_LC/al-db-loader:${{ github.sha }}
+            echo DB_LOADER_IMAGE=$DB_LOADER_IMAGE >> $GITHUB_ENV
+            docker build -t $DB_LOADER_IMAGE ./db-loader
+
+            EMAIL_IMAGE=$DOCKER_USER_LC/al-email:${{ github.sha }}
+            echo EMAIL_IMAGE=$EMAIL_IMAGE >> $GITHUB_ENV
+            docker build -t $EMAIL_IMAGE ./email
+
+            - name: Log in to Docker
+              uses: docker/login-action@v3
+              with:
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_TOKEN }}
+    - name: Push images to DockerHub
+      run: |
+        docker push ${{ secrets.DOCKER_USERNAME }}/al-app:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/al-db-loader:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/al-email:latest
