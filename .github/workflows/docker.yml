@@ -1,5 +1,5 @@
 name: AllergyLab CI
-#Zenabu Fix Docker Hub login secrets.
+
 on: [push]
 
 permissions:
@@ -46,7 +46,7 @@ jobs:
         COSIGN_YES: "true"
       run: |
         cosign sign $APP_DIGEST
-        cosign sign $DB_LOADERበ_DIGEST
+        cosign sign $DB_LOADER_DIGEST
         cosign sign $EMAIL_DIGEST
   deploy:
     needs: [build]
