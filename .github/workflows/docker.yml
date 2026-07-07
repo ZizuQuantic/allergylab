@@ -1,5 +1,5 @@
 name: AllergyLab CI
-#Zenabu
+#Zenabu Fix Docker Hub login secrets
 on: [push]
 
 permissions:
